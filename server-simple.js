@@ -17,28 +17,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Data storage files
-const DATA_DIR = './data';
-const STUDENTS_FILE = path.join(DATA_DIR, 'students.json');
-const USERS_FILE = path.join(DATA_DIR, 'users.json');
-const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
+// File paths not used in serverless environment
+// const DATA_DIR = './data';
+// const STUDENTS_FILE = path.join(DATA_DIR, 'students.json');
+// const USERS_FILE = path.join(DATA_DIR, 'users.json');
+// const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
 
-// Initialize data directory and files
-if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR);
-}
+// Sample data for serverless environment
+const sampleUsers = [
+    { id: 1, username: 'upload_officer', password: 'password123', role: 'upload' },
+    { id: 2, username: 'verify_officer', password: 'password123', role: 'verify' },
+    { id: 3, username: 'director', password: 'password123', role: 'director' },
+    { id: 4, username: 'admin', password: 'password123', role: 'admin' }
+];
 
-// Initialize data files with sample data
-function initializeDataFiles() {
-    // Sample users
-    const sampleUsers = [
-        { id: 1, username: 'upload_officer', password: 'password123', role: 'upload' },
-        { id: 2, username: 'verify_officer', password: 'password123', role: 'verify' },
-        { id: 3, username: 'director', password: 'password123', role: 'director' },
-        { id: 4, username: 'admin', password: 'password123', role: 'admin' }
-    ];
-
-    // Sample students with simplified roll numbers
-    const sampleStudents = [
+// Sample students with simplified roll numbers
+const sampleStudents = [
         {
             id: 1,
             roll_number: '1234',
@@ -137,40 +131,7 @@ function initializeDataFiles() {
         }
     ];
 
-    // Initialize files if they don't exist
-    if (!fs.existsSync(USERS_FILE)) {
-        fs.writeFileSync(USERS_FILE, JSON.stringify(sampleUsers, null, 2));
-    }
-    
-    if (!fs.existsSync(STUDENTS_FILE)) {
-        fs.writeFileSync(STUDENTS_FILE, JSON.stringify(sampleStudents, null, 2));
-    }
-    
-    if (!fs.existsSync(SESSIONS_FILE)) {
-        fs.writeFileSync(SESSIONS_FILE, JSON.stringify([], null, 2));
-    }
-}
-
-// Helper functions for data management
-function readJSONFile(filename) {
-    try {
-        const data = fs.readFileSync(filename, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        console.error(`Error reading ${filename}:`, error);
-        return [];
-    }
-}
-
-function writeJSONFile(filename, data) {
-    try {
-        fs.writeFileSync(filename, JSON.stringify(data, null, 2));
-        return true;
-    } catch (error) {
-        console.error(`Error writing ${filename}:`, error);
-        return false;
-    }
-}
+// File system operations removed for serverless compatibility
 
 function getTwilioClient() {
     const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
