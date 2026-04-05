@@ -1,0 +1,8 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/ussd"
+  to = "/.netlify/functions/ussd"
+  status = 200
