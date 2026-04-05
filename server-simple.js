@@ -248,11 +248,8 @@ async function sendResultSms(student, phoneNumber, isSomali) {
     return to;
 }
 
-// Initialize data on startup
-initializeDataFiles();
-
-// File upload setup
-const upload = multer({ dest: 'uploads/' });
+// File upload disabled for serverless environment
+const upload = multer();
 
 // Routes
 app.get('/', (req, res) => {
