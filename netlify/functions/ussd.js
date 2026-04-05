@@ -23,7 +23,7 @@ exports.handler = async (event) => {
 
     if (text === '' || goHome) {
         response = `CON Ku soo dhawoow / Welcome
-Gobol Banaadir
+Maamulka Waxbarashada Gobalka Banaadir
 Banadir Regional Education
 
 1) Soomaali

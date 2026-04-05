@@ -197,7 +197,7 @@ app.post('/ussd', (req, res) => {
     if (text === '' || goHome) {
         // Language selection
         response = `CON Ku soo dhawoow / Welcome
-Gobol Banaadir
+Maamulka Waxbarashada Gobalka Banaadir
 Banadir Regional Education
 
 1) Soomaali
