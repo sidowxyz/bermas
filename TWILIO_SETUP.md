@@ -4,7 +4,7 @@
 
 1. **Install Dependencies**
 ```bash
-pip install twilio
+npm install
 ```
 
 2. **Get Twilio Credentials**
@@ -30,8 +30,8 @@ export TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 export TWILIO_PHONE_NUMBER=+1234567890
 ```
 
-### Option B: Interactive Setup
-Run the script and choose option 4 to configure Twilio interactively.
+### Option B: Netlify Environment Variables
+Add these same variables in **Site configuration** > **Environment variables**.
 
 ## 📞 Phone Number Requirements
 
@@ -61,16 +61,16 @@ Common Somalia mobile prefixes:
 ## ⚡ Testing the Integration
 
 ### Step-by-Step Test:
-1. Run the script:
+1. Run the app:
 ```bash
-python ussd_simulator_twilio.py
+npm start
 ```
 
-2. Configure Twilio (if not done via env variables)
+2. Open the web simulator and enter your SMS phone number in the phone field
 
 3. Select option **2** - "Receive Detailed Results via SMS"
 
-4. Enter a test roll number: `B2650011`
+4. Enter a test roll number: `1234`
 
 5. Enter a **verified phone number**
 
@@ -82,7 +82,7 @@ Banadir Regional Education Directorate
 Exam Results 2025/2026
 
 Name: Ahmed Mohamed Hassan Ali
-Roll No: B2650011
+Roll No: 1234
 School: Geedi Ugaas Secondary
 Center: JUS
 Average: B-

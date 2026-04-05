@@ -5,6 +5,7 @@ const cors = require('cors');
 const fs = require('fs');
 const multer = require('multer');
 const xlsx = require('xlsx');
+const twilio = require('twilio');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -167,6 +168,88 @@ function writeJSONFile(filename, data) {
     }
 }
 
+function getTwilioClient() {
+    const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
+    if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
+        return null;
+    }
+    return twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+}
+
+function normalizePhoneNumber(phoneNumber) {
+    if (!phoneNumber) {
+        return '';
+    }
+
+    const trimmed = String(phoneNumber).trim();
+    if (trimmed.startsWith('+')) {
+        return trimmed;
+    }
+
+    const digits = trimmed.replace(/\D/g, '');
+    if (digits.startsWith('252')) {
+        return `+${digits}`;
+    }
+    if (digits.startsWith('0')) {
+        return `+252${digits.slice(1)}`;
+    }
+    if (digits.length === 9) {
+        return `+252${digits}`;
+    }
+
+    return `+${digits}`;
+}
+
+function buildDetailedSms(student, isSomali) {
+    if (isSomali) {
+        return [
+            'Maamulka Waxbarashada Gobalka Banaadir',
+            'Adeegga Hubinta Natiijooyinka Imtixaanka',
+            '',
+            `Lambarka: ${student.roll_number}`,
+            `Magaca: ${student.full_name}`,
+            `Dugsi: ${student.school_name}`,
+            `Xarun: ${student.exam_center}`,
+            `Celceliska: ${student.average}`,
+            `Natiijo: ${student.result === 'Pass' ? 'Guul' : 'Dhicis'}`
+        ].join('\n');
+    }
+
+    return [
+        'Banadir Regional Education',
+        'Exam Results Service',
+        '',
+        `Roll No: ${student.roll_number}`,
+        `Name: ${student.full_name}`,
+        `School: ${student.school_name}`,
+        `Center: ${student.exam_center}`,
+        `Average: ${student.average}`,
+        `Result: ${student.result}`
+    ].join('\n');
+}
+
+async function sendResultSms(student, phoneNumber, isSomali) {
+    const client = getTwilioClient();
+    const from = process.env.TWILIO_PHONE_NUMBER;
+
+    if (!client || !from) {
+        throw new Error('Twilio is not configured');
+    }
+
+    const to = normalizePhoneNumber(phoneNumber);
+    if (!to || to === '+') {
+        throw new Error('A valid phone number is required');
+    }
+
+    await client.messages.create({
+        from,
+        to,
+        body: buildDetailedSms(student, isSomali)
+    });
+
+    return to;
+}
+
 // Initialize data on startup
 initializeDataFiles();
 
@@ -179,7 +262,7 @@ app.get('/', (req, res) => {
 });
 
 // USSD Simulation Routes
-app.post('/ussd', (req, res) => {
+app.post('/ussd', async (req, res) => {
     const { sessionId, phoneNumber, text } = req.body;
     let response = '';
 
@@ -328,24 +411,39 @@ Please enter a valid number
 0) Back`;
             }
         } else {
-            const sessions = readJSONFile(SESSIONS_FILE);
-            sessions.push({ sessionId, phoneNumber, rollNumber, step: 'sms_sent', timestamp: new Date().toISOString() });
-            writeJSONFile(SESSIONS_FILE, sessions);
+            try {
+                const recipient = await sendResultSms(student, phoneNumber, isSomali);
+                const sessions = readJSONFile(SESSIONS_FILE);
+                sessions.push({ sessionId, phoneNumber: recipient, rollNumber, step: 'sms_sent', timestamp: new Date().toISOString() });
+                writeJSONFile(SESSIONS_FILE, sessions);
 
-            if (isSomali) {
-                response = `CON SMS waa loo diray telefoonkaaga.
+                if (isSomali) {
+                    response = `CON SMS waa loo diray ${recipient}.
 Hubi fariimaha natiijadaada.
 
 Waad ku mahadsantahay.
 
 0) Dib u noqo`;
-            } else {
-                response = `CON SMS sent to your phone.
+                } else {
+                    response = `CON SMS sent to ${recipient}.
 Check messages for results.
 
 Thank you for using BERMAS.
 
 0) Back`;
+                }
+            } catch (error) {
+                if (isSomali) {
+                    response = `CON SMS lama diri karin.
+Hubi lambarkaaga ama dejinta Twilio.
+
+0) Dib u noqo`;
+                } else {
+                    response = `CON SMS could not be sent.
+Check your phone number or Twilio setup.
+
+0) Back`;
+                }
             }
         }
     } else {

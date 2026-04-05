@@ -1,3 +1,5 @@
+const twilio = require('twilio');
+
 const students = [
     { id: 1, roll_number: '1234', full_name: 'Ahmed Mohamed Hassan Ali', mother_name: 'Fatima Omar Yusuf', school_name: 'Geedi Ugaas Secondary', exam_center: 'JUS', average: 'B-', result: 'Pass', status: 'approved' },
     { id: 2, roll_number: '1235', full_name: 'Sahra Abdi Mohamud Farah', mother_name: 'Halima Ali Omar', school_name: 'Al-Azhar Secondary', exam_center: 'AZH', average: 'A-', result: 'Pass', status: 'approved' },
@@ -5,12 +7,94 @@ const students = [
     { id: 4, roll_number: '1237', full_name: 'Khadija Ali Omar Hussein', mother_name: 'Mariam Hassan Ahmed', school_name: 'Hope Secondary', exam_center: 'HPE', average: 'E', result: 'Fail', status: 'approved' }
 ];
 
+function getTwilioClient() {
+    const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
+    if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
+        return null;
+    }
+    return twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+}
+
+function normalizePhoneNumber(phoneNumber) {
+    if (!phoneNumber) {
+        return '';
+    }
+
+    const trimmed = String(phoneNumber).trim();
+    if (trimmed.startsWith('+')) {
+        return trimmed;
+    }
+
+    const digits = trimmed.replace(/\D/g, '');
+    if (digits.startsWith('252')) {
+        return `+${digits}`;
+    }
+    if (digits.startsWith('0')) {
+        return `+252${digits.slice(1)}`;
+    }
+    if (digits.length === 9) {
+        return `+252${digits}`;
+    }
+
+    return `+${digits}`;
+}
+
+function buildDetailedSms(student, isSomali) {
+    if (isSomali) {
+        return [
+            'Maamulka Waxbarashada Gobalka Banaadir',
+            'Adeegga Hubinta Natiijooyinka Imtixaanka',
+            '',
+            `Lambarka: ${student.roll_number}`,
+            `Magaca: ${student.full_name}`,
+            `Dugsi: ${student.school_name}`,
+            `Xarun: ${student.exam_center}`,
+            `Celceliska: ${student.average}`,
+            `Natiijo: ${student.result === 'Pass' ? 'Guul' : 'Dhicis'}`
+        ].join('\n');
+    }
+
+    return [
+        'Banadir Regional Education',
+        'Exam Results Service',
+        '',
+        `Roll No: ${student.roll_number}`,
+        `Name: ${student.full_name}`,
+        `School: ${student.school_name}`,
+        `Center: ${student.exam_center}`,
+        `Average: ${student.average}`,
+        `Result: ${student.result}`
+    ].join('\n');
+}
+
+async function sendResultSms(student, phoneNumber, isSomali) {
+    const client = getTwilioClient();
+    const from = process.env.TWILIO_PHONE_NUMBER;
+
+    if (!client || !from) {
+        throw new Error('Twilio is not configured');
+    }
+
+    const to = normalizePhoneNumber(phoneNumber);
+    if (!to || to === '+') {
+        throw new Error('A valid phone number is required');
+    }
+
+    await client.messages.create({
+        from,
+        to,
+        body: buildDetailedSms(student, isSomali)
+    });
+
+    return to;
+}
+
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
-    const { text } = JSON.parse(event.body);
+    const { text, phoneNumber } = JSON.parse(event.body);
     let response = '';
 
     const parts = text.split('*');
@@ -126,20 +210,35 @@ Result: ${student.result}
                 ? `CON Lambarka waa khalad.\nFadlan geli lambar sax ah\n(tusaale: 1234)\n\n0) Dib u noqo`
                 : `CON Invalid Roll Number.\nPlease enter a valid number\n(e.g., 1234)\n\n0) Back`;
         } else {
-            if (isSomali) {
-                response = `CON SMS waa loo diray telefoonkaaga.
+            try {
+                const recipient = await sendResultSms(student, phoneNumber, isSomali);
+                if (isSomali) {
+                    response = `CON SMS waa loo diray ${recipient}.
 Hubi fariimaha natiijadaada.
 
 Waad ku mahadsantahay.
 
 0) Dib u noqo`;
-            } else {
-                response = `CON SMS sent to your phone.
+                } else {
+                    response = `CON SMS sent to ${recipient}.
 Check messages for results.
 
 Thank you for using BERMAS.
 
 0) Back`;
+                }
+            } catch (error) {
+                if (isSomali) {
+                    response = `CON SMS lama diri karin.
+Hubi lambarkaaga ama dejinta Twilio.
+
+0) Dib u noqo`;
+                } else {
+                    response = `CON SMS could not be sent.
+Check your phone number or Twilio setup.
+
+0) Back`;
+                }
             }
         }
     } else {
