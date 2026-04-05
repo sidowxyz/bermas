@@ -30,7 +30,7 @@ Banadir Regional Education
 2) English`;
     } else if (text === '1' || text === '2') {
         if (isSomali) {
-            response = `CON Adeega Natiijooyinka Imtixaanka
+            response = `CON Adeegga Hubinta Natiijooyinka Imtixaanka
 1) Hubi Guul/Dhicis (Shaashadda)
 2) Hel Natiijo Faahfaahsan (SMS)
 3) Sida loo isticmaalo & Nidaamka
