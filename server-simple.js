@@ -204,31 +204,64 @@ function normalizePhoneNumber(phoneNumber) {
     return `+${digits}`;
 }
 
+function getGradeFromScore(score) {
+    if (score >= 90) return 'A';
+    if (score >= 85) return 'A-';
+    if (score >= 80) return 'B+';
+    if (score >= 75) return 'B';
+    if (score >= 70) return 'B-';
+    if (score >= 65) return 'C+';
+    if (score >= 60) return 'C';
+    if (score >= 55) return 'C-';
+    if (score >= 50) return 'D+';
+    if (score >= 40) return 'D';
+    if (score >= 35) return 'D-';
+    return 'E';
+}
+
 function buildDetailedSms(student, isSomali) {
     if (isSomali) {
         return [
             'Maamulka Waxbarashada Gobalka Banaadir',
-            'Adeegga Hubinta Natiijooyinka Imtixaanka',
+            'Natiijooyinka Imtixaanka Sanadka Waxbarasho 2025/2026',
             '',
-            `Lambarka: ${student.roll_number}`,
-            `Magaca: ${student.full_name}`,
-            `Dugsi: ${student.school_name}`,
-            `Xarun: ${student.exam_center}`,
+            `Magaca Buuxa: ${student.full_name}`,
+            `Lambarka Diiwaangelinta: ${student.roll_number}`,
+            `Magaca Hooyadeed: ${student.mother_name}`,
+            `Magaca Dugsiga: ${student.school_name}`,
+            `Xarunta Imtixaanka: ${student.exam_center}`,
             `Celceliska: ${student.average}`,
-            `Natiijo: ${student.result === 'Pass' ? 'Guul' : 'Dhicis'}`
+            `Go'aanka: ${student.result === 'Pass' ? 'Guul' : 'Dhicis'}`,
+            '',
+            'DARAJOOYINKA MAADOOYINKA:',
+            `Diinta Islaamka ${getGradeFromScore(student.islamic_studies)} Taariikhda/Bulshada ${getGradeFromScore(student.social_studies)}`,
+            `Carabi ${getGradeFromScore(student.arabic)} Sayniska ${getGradeFromScore(student.science)}`,
+            `Soomaali ${getGradeFromScore(student.somali)} Ingiriisi ${getGradeFromScore(student.english)}`,
+            `Xisaabta ${getGradeFromScore(student.math)} Tignoolajiyada ${getGradeFromScore(student.technology)}`,
+            '',
+            'Waad ku mahadsantahay Adeegga Natiijooyinka Imtixaanka.'
         ].join('\n');
     }
 
     return [
-        'Banadir Regional Education',
-        'Exam Results Service',
+        'Banadir Regional Education Directorate',
+        'Exam Results for Academic year 2025/2026',
         '',
-        `Roll No: ${student.roll_number}`,
-        `Name: ${student.full_name}`,
-        `School: ${student.school_name}`,
-        `Center: ${student.exam_center}`,
+        `Full name: ${student.full_name}`,
+        `Roll Number: ${student.roll_number}`,
+        `Mother's full name: ${student.mother_name}`,
+        `School Name: ${student.school_name}`,
+        `Examination Center: ${student.exam_center}`,
         `Average: ${student.average}`,
-        `Result: ${student.result}`
+        `Decision: ${student.result}`,
+        '',
+        'SUBJECT GRADES:',
+        `Islamic Studies ${getGradeFromScore(student.islamic_studies)} Social Studies ${getGradeFromScore(student.social_studies)}`,
+        `Arabic ${getGradeFromScore(student.arabic)} Science ${getGradeFromScore(student.science)}`,
+        `Somali ${getGradeFromScore(student.somali)} English ${getGradeFromScore(student.english)}`,
+        `Math ${getGradeFromScore(student.math)} Technology ${getGradeFromScore(student.technology)}`,
+        '',
+        'Thank you for using Exam Results Service.'
     ].join('\n');
 }
 
