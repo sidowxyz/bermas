@@ -35,8 +35,8 @@
             border: 1px solid #222;
             padding: 14px;
             color: #00ff00;
-            font-size: 15px;
-            line-height: 1.5;
+            font-size: 13px;
+            line-height: 1.45;
             overflow-y: auto;
             white-space: pre-wrap;
             word-break: break-word;
@@ -114,9 +114,9 @@
             border-radius: 6px;
             color: #ccc;
             font-family: 'Courier New', monospace;
-            font-size: 20px;
-            font-weight: 900;
-            padding: 12px 0;
+            font-size: 17px;
+            font-weight: bold;
+            padding: 10px 0;
             cursor: pointer;
             user-select: none;
             text-align: center;
@@ -168,10 +168,11 @@
 <div class="app">
     <div class="screen" id="scr">
         <div class="sc" id="sc">
-            <div class="hdr">Maamulka Waxbarashada Gobalka Banaadir</div>
- Hubi Natiijada Imtixaanka
- 
- Geli <span style="color:#ffff00">*57001#</span> oo riix SEND
+            <div class="hdr">Maamulka Waxbarashada Banaadir</div>
+Ku soo dhawoow BERMAS
+Adeega Natiijooyinka
+
+Geli <span style="color:#ffff00">*57001#</span> oo riix CALL
         </div>
     </div>
 
@@ -221,12 +222,12 @@ function go(){
             if(v==='0'){ss='';req('0')}
             else{const tx=ss?ss+'*'+v:v;ss+=(ss?'*':'')+v;req(tx)}
         },600);
-    }else{err('Geli *57001# oo riix SEND')}
+    }else{err('Geli *57001# oo riix CALL')}
     I().value='';
 }
 
 function req(tx){
-    fetch('/ussd',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sid,phoneNumber:'auto',text:tx})})
+    fetch('/ussd',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sid,phoneNumber:'+252612345678',text:tx})})
     .then(r=>r.text()).then(show).catch(()=>err('Network error'));
 }
 
@@ -245,7 +246,7 @@ function err(m){S().innerHTML='<div class="hdr">BERMAS</div><div class="err"><br
 
 function reset(){
     ss='';on=false;sid=Math.random().toString(36).substr(2,9);
-    S().innerHTML='<div class="hdr">Maamulka Waxbarashada Gobalka Banaadir</div>\nHubi Natiijada Imtixaanka\n\nGeli <span style="color:#ffff00">*57001#</span> oo riix SEND';
+    S().innerHTML='<div class="hdr">Maamulka Waxbarashada Banaadir</div>\nKu soo dhawoow BERMAS\nAdeega Natiijooyinka\n\nGeli <span style="color:#ffff00">*57001#</span> oo riix CALL';
 }
 
 function end(){on=false;ss='';I().value='';reset()}

@@ -316,7 +316,7 @@ app.post('/ussd', async (req, res) => {
 
     if (text === '' || goHome) {
         // Language selection
-        response = `CON Soo dhawoow / Welcome
+        response = `CON Ku soo dhawoow / Welcome
 Maamulka Waxbarashada Gobalka Banaadir
 Banadir Regional Education
 
@@ -389,8 +389,7 @@ E (0-39) - Ungraded
     } else if (menuPath.length === 2 && menuPath[0] === '1') {
         // Pass/Fail result
         const rollNumber = menuPath[1];
-        const students = readJSONFile(STUDENTS_FILE);
-        const student = students.find(s => s.roll_number === rollNumber && s.status === 'approved');
+        const student = sampleStudents.find(s => s.roll_number === rollNumber && s.status === 'approved');
 
         if (!student) {
             if (isSomali) {
@@ -430,8 +429,7 @@ Result: ${student.result}
     } else if (menuPath.length === 2 && menuPath[0] === '2') {
         // SMS results
         const rollNumber = menuPath[1];
-        const students = readJSONFile(STUDENTS_FILE);
-        const student = students.find(s => s.roll_number === rollNumber && s.status === 'approved');
+        const student = sampleStudents.find(s => s.roll_number === rollNumber && s.status === 'approved');
 
         if (!student) {
             if (isSomali) {
@@ -450,9 +448,7 @@ Please enter a valid number
         } else {
             try {
                 const recipient = await sendResultSms(student, student.phone_number, isSomali);
-                const sessions = readJSONFile(SESSIONS_FILE);
-                sessions.push({ sessionId, phoneNumber: recipient, rollNumber, step: 'sms_sent', timestamp: new Date().toISOString() });
-                writeJSONFile(SESSIONS_FILE, sessions);
+                console.log(`SMS sent to ${recipient} for roll number ${rollNumber}`);
 
                 if (isSomali) {
                     response = `CON SMS waa loo diray ${recipient}.
@@ -507,85 +503,16 @@ app.get('/admin', (req, res) => {
 
 app.get('/api/students', (req, res) => {
     try {
-        const students = readJSONFile(STUDENTS_FILE);
-        res.json(students);
+        res.json(sampleStudents);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-app.post('/api/students/upload', upload.single('file'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    try {
-        const workbook = xlsx.readFile(req.file.path);
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const data = xlsx.utils.sheet_to_json(worksheet);
-
-        const students = readJSONFile(STUDENTS_FILE);
-        let maxId = students.length > 0 ? Math.max(...students.map(s => s.id)) : 0;
-        let inserted = 0;
-        let errors = [];
-
-        data.forEach((row, index) => {
-            const rollNumber = row['Roll Number'];
-            if (!rollNumber) {
-                errors.push(`Row ${index + 2}: Missing Roll Number`);
-                return;
-            }
-
-            // Check if student already exists
-            const existingIndex = students.findIndex(s => s.roll_number === rollNumber);
-            
-            const studentData = {
-                id: existingIndex >= 0 ? students[existingIndex].id : ++maxId,
-                roll_number: rollNumber,
-                full_name: row['Student Full Name'] || '',
-                mother_name: row["Mother's Name"] || '',
-                gender: row['Gender'] || '',
-                district: row['District'] || '',
-                school_name: row['School Name'] || '',
-                exam_center: row['Exam Center'] || '',
-                arabic: parseInt(row['Arabic']) || 0,
-                social_studies: parseInt(row['Social Studies']) || 0,
-                math: parseInt(row['Math']) || 0,
-                technology: parseInt(row['Technology']) || 0,
-                english: parseInt(row['English']) || 0,
-                science: parseInt(row['Science']) || 0,
-                islamic_studies: parseInt(row['Islamic Studies']) || 0,
-                somali: parseInt(row['Somali']) || 0,
-                total: parseInt(row['Total']) || 0,
-                average: row['Average'] || '',
-                result: row['Result'] || '',
-                status: 'pending',
-                created_at: existingIndex >= 0 ? students[existingIndex].created_at : new Date().toISOString()
-            };
-
-            if (existingIndex >= 0) {
-                students[existingIndex] = studentData;
-            } else {
-                students.push(studentData);
-            }
-            inserted++;
-        });
-
-        // Save updated students data
-        writeJSONFile(STUDENTS_FILE, students);
-
-        // Clean up uploaded file
-        fs.unlinkSync(req.file.path);
-
-        res.json({ 
-            message: `Upload completed. ${inserted} records processed.`,
-            errors: errors
-        });
-
-    } catch (error) {
-        res.status(500).json({ error: 'Error processing file: ' + error.message });
-    }
+app.post('/api/students/upload', (req, res) => {
+    res.status(501).json({ 
+        error: 'File upload is disabled in serverless environment. Use direct data updates instead.' 
+    });
 });
 
 // Helper function to convert score to grade
