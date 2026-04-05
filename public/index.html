@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BERMAS USSD</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; background: #111; }
+
+        body {
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            background: #111;
+            overflow: hidden;
+        }
+
+        .screen {
+            flex: 1;
+            min-height: 0;
+            background: #000;
+            margin: 8px 8px 6px;
+            border-radius: 10px;
+            border: 1px solid #222;
+            padding: 14px;
+            color: #00ff00;
+            font-size: 13px;
+            line-height: 1.45;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .screen::-webkit-scrollbar { width: 0; }
+
+        .sc { animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+        .hdr {
+            color: #88ff88;
+            font-size: 11px;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #1a3a1a;
+            letter-spacing: 1px;
+        }
+
+        .err { color: #ff6666; }
+        .ok { color: #66ff66; }
+        .cur { animation: blink 1s infinite; }
+        @keyframes blink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+
+        .dot {
+            display: inline-block;
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: ld 1.4s infinite ease-in-out;
+            margin: 0 2px;
+        }
+        .dot:nth-child(2){animation-delay:-.3s}
+        .dot:nth-child(3){animation-delay:-.6s}
+        @keyframes ld { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+
+        .ibar {
+            display: flex;
+            margin: 0 8px 6px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #222;
+        }
+        .ibar input {
+            flex: 1;
+            background: #000;
+            border: none;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            padding: 10px 12px;
+            outline: none;
+        }
+        .ibar input::placeholder { color: #335533; }
+        .ibar button {
+            background: #00ff00;
+            border: none;
+            color: #000;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 10px 18px;
+            cursor: pointer;
+        }
+        .ibar button:active { background: #00cc00; }
+
+        .pad {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 4px;
+            margin: 0 8px 4px;
+        }
+        .k {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+            font-size: 17px;
+            font-weight: bold;
+            padding: 10px 0;
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+        }
+        .k:active { background: #00ff00; color: #000; border-color: #00ff00; }
+        .k .s { display:block; font-size:7px; color:#444; font-weight:normal; margin-top:1px; }
+
+        .acts {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            gap: 4px;
+            margin: 0 8px 4px;
+        }
+        .acts button {
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        .ac { background:#1a3a1a; border:1px solid #00ff00; color:#00ff00; }
+        .ac:active { background:#00ff00; color:#000; }
+        .ax { background:#1a1a1a; border:1px solid #444; color:#888; }
+        .ax:active { background:#444; color:#000; }
+        .ae { background:#2a1a1a; border:1px solid #ff4444; color:#ff4444; }
+        .ae:active { background:#ff4444; color:#000; }
+
+        .ft {
+            text-align: center;
+            color: #333;
+            font-size: 9px;
+            padding: 2px 0 6px;
+        }
+        .ft b { color: #00ff00; }
+
+        @media (min-width: 481px) {
+            .app {
+                height: 92vh;
+                max-height: 780px;
+                border-radius: 14px;
+                border: 1px solid #222;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="screen" id="scr">
+        <div class="sc" id="sc">
+            <div class="hdr">Maamulka Waxbarashada Banaadir</div>
+Ku soo dhawoow BERMAS
+Adeega Natiijooyinka
+
+Geli <span style="color:#ffff00">*57001#</span> oo riix CALL
+        </div>
+    </div>
+
+    <div class="ibar">
+        <input type="text" id="inp" placeholder="*57001#" autofocus />
+        <button onclick="go()">SEND</button>
+    </div>
+
+    <div class="pad">
+        <div class="k" onclick="t('1')">1</div>
+        <div class="k" onclick="t('2')">2<span class="s">ABC</span></div>
+        <div class="k" onclick="t('3')">3<span class="s">DEF</span></div>
+        <div class="k" onclick="t('4')">4<span class="s">GHI</span></div>
+        <div class="k" onclick="t('5')">5<span class="s">JKL</span></div>
+        <div class="k" onclick="t('6')">6<span class="s">MNO</span></div>
+        <div class="k" onclick="t('7')">7<span class="s">PQRS</span></div>
+        <div class="k" onclick="t('8')">8<span class="s">TUV</span></div>
+        <div class="k" onclick="t('9')">9<span class="s">WXYZ</span></div>
+        <div class="k" onclick="t('*')">*</div>
+        <div class="k" onclick="t('0')">0<span class="s">+</span></div>
+        <div class="k" onclick="t('#')">#</div>
+    </div>
+
+    <div class="acts">
+        <button class="ax" onclick="cl()">CLEAR</button>
+        <button class="ae" onclick="end()">END</button>
+    </div>
+
+    <div class="ft">Test: <b>1234</b> <b>1235</b> <b>1236</b> <b>1237</b></div>
+</div>
+
+<script>
+let ss='', on=false, sid=Math.random().toString(36).substr(2,9);
+const I=()=>document.getElementById('inp');
+const S=()=>document.getElementById('sc');
+
+function t(c){I().value+=c}
+function cl(){const i=I();i.value=i.value.slice(0,-1)}
+
+function go(){
+    const v=I().value.trim();
+    if(!v)return;
+    if(v==='*57001#'&&!on){on=true;ss='';ld('Connecting...');setTimeout(()=>req(''),1000)}
+    else if(on){
+        ld('Processing...');
+        setTimeout(()=>{
+            if(v==='0'){ss='';req('0')}
+            else{const tx=ss?ss+'*'+v:v;ss+=(ss?'*':'')+v;req(tx)}
+        },600);
+    }else{err('Geli *57001# oo riix CALL')}
+    I().value='';
+}
+
+function req(tx){
+    fetch('/ussd',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sid,phoneNumber:'+252612345678',text:tx})})
+    .then(r=>r.text()).then(show).catch(()=>err('Network error'));
+}
+
+function show(r){
+    const el=S();
+    if(r.startsWith('CON')){
+        el.innerHTML='<div class="hdr">BERMAS</div><div class="sc">'+r.substring(4).replace(/\n/g,'<br>')+'</div>';
+    }else if(r.startsWith('END')){
+        el.innerHTML='<div class="hdr">BERMAS</div><div class="ok sc">'+r.substring(4).replace(/\n/g,'<br>')+'</div>';
+        on=false;setTimeout(reset,6000);
+    }
+}
+
+function ld(m){S().innerHTML='<div class="hdr">BERMAS</div><br>'+m+'<br><br><span class="dot"></span><span class="dot"></span><span class="dot"></span>'}
+function err(m){S().innerHTML='<div class="hdr">BERMAS</div><div class="err"><br>'+m+'</div>';on=false}
+
+function reset(){
+    ss='';on=false;sid=Math.random().toString(36).substr(2,9);
+    S().innerHTML='<div class="hdr">Maamulka Waxbarashada Banaadir</div>\nKu soo dhawoow BERMAS\nAdeega Natiijooyinka\n\nGeli <span style="color:#ffff00">*57001#</span> oo riix CALL';
+}
+
+function end(){on=false;ss='';I().value='';reset()}
+I().addEventListener('keypress',e=>{if(e.key==='Enter')go()});
+</script>
+</body>
+</html>

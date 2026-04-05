@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BERMAS USSD - Authentic Mobile Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .mobile-phone {
+            width: 280px;
+            height: 520px;
+            background: #2a2a2a;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 
+                0 0 20px rgba(0,0,0,0.7),
+                inset 0 0 10px rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .phone-header {
+            text-align: center;
+            color: #888;
+            font-size: 10px;
+            margin-bottom: 15px;
+            padding: 5px;
+        }
+
+        .signal-bars {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+        }
+
+        .bars {
+            display: flex;
+            gap: 1px;
+        }
+
+        .bar {
+            width: 3px;
+            height: 8px;
+            background: #00ff00;
+            margin-right: 1px;
+        }
+
+        .bar:nth-child(2) { height: 6px; }
+        .bar:nth-child(3) { height: 4px; }
+        .bar:nth-child(4) { height: 2px; }
+
+        .battery {
+            border: 1px solid #888;
+            width: 20px;
+            height: 10px;
+            position: relative;
+        }
+
+        .battery::after {
+            content: '';
+            width: 2px;
+            height: 6px;
+            background: #888;
+            position: absolute;
+            right: -3px;
+            top: 2px;
+        }
+
+        .battery-level {
+            background: #00ff00;
+            height: 100%;
+            width: 80%;
+        }
+
+        .ussd-screen {
+            width: 100%;
+            height: 280px;
+            background: #000000;
+            border: 3px solid #333;
+            border-radius: 8px;
+            padding: 8px;
+            color: #00ff00;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.2;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .ussd-screen::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .ussd-screen::-webkit-scrollbar-track {
+            background: #222;
+        }
+
+        .ussd-screen::-webkit-scrollbar-thumb {
+            background: #00ff00;
+        }
+
+        .screen-content {
+            animation: typewriter 0.5s ease-in-out;
+        }
+
+        @keyframes typewriter {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cursor {
+            color: #00ff00;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .phone-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .key {
+            background: #3a3a3a;
+            border: 2px solid #555;
+            border-radius: 8px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            height: 35px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s;
+            position: relative;
+        }
+
+        .key:hover {
+            background: #4a4a4a;
+            border-color: #00ff00;
+        }
+
+        .key:active {
+            background: #00ff00;
+            color: #000;
+            transform: scale(0.95);
+        }
+
+        .key.star, .key.hash {
+            font-size: 20px;
+        }
+
+        .key .sub-text {
+            position: absolute;
+            bottom: 2px;
+            font-size: 8px;
+            color: #aaa;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: #2d5a2d;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            font-weight: bold;
+            height: 30px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .action-btn:hover {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .action-btn.call {
+            background: #2d5a2d;
+        }
+
+        .action-btn.end {
+            background: #5a2d2d;
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .action-btn.end:hover {
+            background: #ff4444;
+            color: #000;
+        }
+
+        .network-info {
+            text-align: center;
+            font-size: 9px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .loading-animation {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: loading 1.5s infinite ease-in-out;
+        }
+
+        .loading-animation:nth-child(2) { animation-delay: -0.3s; }
+        .loading-animation:nth-child(3) { animation-delay: -0.6s; }
+
+        @keyframes loading {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Authentic USSD text styling */
+        .ussd-menu {
+            color: #00ff00;
+        }
+
+        .ussd-prompt {
+            color: #00ff00;
+        }
+
+        .ussd-error {
+            color: #ff6666;
+        }
+
+        .ussd-success {
+            color: #66ff66;
+        }
+
+        .session-info {
+            position: absolute;
+            bottom: 5px;
+            right: 8px;
+            font-size: 8px;
+            color: #444;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 480px) {
+            .mobile-phone {
+                width: 95%;
+                max-width: 280px;
+                height: auto;
+                min-height: 520px;
+            }
+        }
+
+        /* Special USSD characters */
+        .ussd-header {
+            border-bottom: 1px solid #333;
+            padding-bottom: 2px;
+            margin-bottom: 4px;
+            color: #88ff88;
+        }
+
+        .input-indicator {
+            color: #ffff00;
+        }
+
+        /* Realistic mobile carrier styling */
+        .carrier-name {
+            font-size: 8px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-phone">
+        <!-- Phone Header with Signal/Battery -->
+        <div class="phone-header">
+            <div class="signal-bars">
+                <div>
+                    <span class="carrier-name">Hormuud</span>
+                    <div class="bars">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <div>14:23</div>
+                <div class="battery">
+                    <div class="battery-level"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- USSD Screen Display -->
+        <div class="ussd-screen" id="ussdDisplay">
+            <div class="screen-content" id="screenContent">
+                <div class="ussd-header">USSD Service</div>
+                Welcome to BERMAS
+                
+                Dial *57001# to begin
+                
+                <span class="cursor">_</span>
+            </div>
+            <div class="session-info" id="sessionInfo">Session: Ready</div>
+        </div>
+
+        <!-- Mobile Phone Keypad -->
+        <div class="phone-keypad">
+            <div class="key" onclick="pressKey('1')">1<div class="sub-text"></div></div>
+            <div class="key" onclick="pressKey('2')">2<div class="sub-text">ABC</div></div>
+            <div class="key" onclick="pressKey('3')">3<div class="sub-text">DEF</div></div>
+            <div class="key" onclick="pressKey('4')">4<div class="sub-text">GHI</div></div>
+            <div class="key" onclick="pressKey('5')">5<div class="sub-text">JKL</div></div>
+            <div class="key" onclick="pressKey('6')">6<div class="sub-text">MNO</div></div>
+            <div class="key" onclick="pressKey('7')">7<div class="sub-text">PQRS</div></div>
+            <div class="key" onclick="pressKey('8')">8<div class="sub-text">TUV</div></div>
+            <div class="key" onclick="pressKey('9')">9<div class="sub-text">WXYZ</div></div>
+            <div class="key star" onclick="pressKey('*')">*</div>
+            <div class="key" onclick="pressKey('0')">0<div class="sub-text">+</div></div>
+            <div class="key hash" onclick="pressKey('#')">#</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn call" onclick="initiateCall()">CALL</button>
+            <button class="action-btn" onclick="clearInput()">CLEAR</button>
+            <button class="action-btn end" onclick="endSession()">END</button>
+        </div>
+
+        <!-- Network Info -->
+        <div class="network-info">
+            <div id="networkStatus">Hormuud USSD Service Ready</div>
+        </div>
+    </div>
+
+    <script>
+        let currentInput = '';
+        let ussdSession = '';
+        let sessionActive = false;
+        let sessionId = Math.random().toString(36).substr(2, 9);
+        
+        // Update time every minute
+        setInterval(() => {
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2, '0') + ':' + 
+                        now.getMinutes().toString().padStart(2, '0');
+            document.querySelector('.signal-bars div:nth-child(2)').textContent = time;
+        }, 60000);
+
+        function pressKey(key) {
+            // Visual feedback
+            const keyElement = event.target;
+            keyElement.style.backgroundColor = '#00ff00';
+            keyElement.style.color = '#000';
+            setTimeout(() => {
+                keyElement.style.backgroundColor = '#3a3a3a';
+                keyElement.style.color = 'white';
+            }, 100);
+
+            currentInput += key;
+            updateInputDisplay();
+        }
+
+        function updateInputDisplay() {
+            const content = document.getElementById('screenContent');
+            if (!sessionActive) {
+                content.innerHTML = `
+                    <div class="ussd-header">USSD Service</div>
+                    Input: ${currentInput}<span class="cursor">_</span>
+                    
+                    Press CALL to dial
+                `;
+            }
+        }
+
+        function initiateCall() {
+            if (!currentInput) return;
+            
+            if (currentInput === '*57001#') {
+                startUSSDSession();
+            } else {
+                showError('Invalid USSD code\nPlease dial *57001#');
+            }
+        }
+
+        function startUSSDSession() {
+            sessionActive = true;
+            ussdSession = '';
+            document.getElementById('sessionInfo').textContent = 'Session: Active';
+            showLoading('Connecting to BERMAS...');
+            
+            setTimeout(() => {
+                sendUSSDRequest('');
+            }, 2000);
+        }
+
+        function sendUSSDRequest(text) {
+            fetch('/ussd', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sessionId: sessionId,
+                    phoneNumber: '+252612345678',
+                    text: text
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                displayUSSDResponse(data);
+            })
+            .catch(error => {
+                showError('Network Error\nPlease try again');
+            });
+        }
+
+        function displayUSSDResponse(response) {
+            const content = document.getElementById('screenContent');
+            
+            // Parse response type
+            if (response.startsWith('CON')) {
+                // Continue session
+                const message = response.substring(4);
+                content.innerHTML = `
+                    <div class="ussd-header">USSD Service</div>
+                    <div class="ussd-menu">${formatUSSDText(message)}</div>
+                    <div class="input-indicator">Enter choice: <span class="cursor">_</span></div>
+                `;
+            } else if (response.startsWith('END')) {
+                // End session
+                const message = response.substring(4);
+                content.innerHTML = `
+                    <div class="ussd-header">USSD Service</div>
+                    <div class="ussd-success">${formatUSSDText(message)}</div>
+                    
+                    <div style="color: #666; margin-top: 10px;">Session ended</div>
+                `;
+                sessionActive = false;
+                document.getElementById('sessionInfo').textContent = 'Session: Complete';
+                setTimeout(resetScreen, 5000);
+            }
+        }
+
+        function formatUSSDText(text) {
+            // Format text to look authentic on mobile
+            return text
+                .replace(/\n/g, '<br>')
+                .replace(/Banadir Regional Education Directorate/g, 
+                    '<div class="ussd-header">Banadir Regional Education</div>')
+                .replace(/Welcome to Exam Results Service/g,
+                    '<div style="color: #88ff88;">Welcome to Exam Results Service</div>');
+        }
+
+        function showLoading(message) {
+            const content = document.getElementById('screenContent');
+            content.innerHTML = `
+                <div class="ussd-header">USSD Service</div>
+                ${message}
+                <br><br>
+                <span class="loading-animation"></span>
+                <span class="loading-animation"></span>
+                <span class="loading-animation"></span>
+            `;
+        }
+
+        function showError(message) {
+            const content = document.getElementById('screenContent');
+            content.innerHTML = `
+                <div class="ussd-header">USSD Service</div>
+                <div class="ussd-error">${message}</div>
+                
+                <div style="color: #666; margin-top: 10px;">Press CLEAR to try again</div>
+            `;
+        }
+
+        function clearInput() {
+            if (sessionActive) {
+                // Clear current USSD input during session
+                currentInput = '';
+                updateInputDisplay();
+            } else {
+                // Clear initial input
+                currentInput = '';
+                resetScreen();
+            }
+        }
+
+        function endSession() {
+            sessionActive = false;
+            currentInput = '';
+            ussdSession = '';
+            document.getElementById('sessionInfo').textContent = 'Session: Ended';
+            
+            const content = document.getElementById('screenContent');
+            content.innerHTML = `
+                <div class="ussd-header">USSD Service</div>
+                <div class="ussd-error">Session terminated</div>
+                
+                <div style="color: #666;">Ready for new session</div>
+            `;
+            
+            setTimeout(resetScreen, 3000);
+        }
+
+        function resetScreen() {
+            currentInput = '';
+            ussdSession = '';
+            sessionActive = false;
+            sessionId = Math.random().toString(36).substr(2, 9);
+            document.getElementById('sessionInfo').textContent = 'Session: Ready';
+            
+            const content = document.getElementById('screenContent');
+            content.innerHTML = `
+                <div class="ussd-header">USSD Service</div>
+                Welcome to BERMAS
+                
+                Dial *57001# to begin
+                
+                <span class="cursor">_</span>
+            `;
+        }
+
+        // Handle numeric input during USSD session
+        document.addEventListener('keydown', function(e) {
+            if (sessionActive && e.key >= '0' && e.key <= '9') {
+                pressKey(e.key);
+                
+                // Auto-send after 2 seconds of no input
+                clearTimeout(window.ussdTimeout);
+                window.ussdTimeout = setTimeout(() => {
+                    if (currentInput && sessionActive) {
+                        showLoading('Processing...');
+                        setTimeout(() => {
+                            sendUSSDRequest(ussdSession ? ussdSession + '*' + currentInput : currentInput);
+                            ussdSession += (ussdSession ? '*' : '') + currentInput;
+                            currentInput = '';
+                        }, 1000);
+                    }
+                }, 2000);
+            }
+        });
+
+        // Simulate realistic mobile phone behavior
+        setTimeout(() => {
+            document.getElementById('networkStatus').innerHTML = 
+                'Hormuud 3G • <span style="color: #00ff00;">●</span> USSD Ready';
+        }, 1000);
+    </script>
+</body>
+</html>
