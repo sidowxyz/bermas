@@ -152,7 +152,7 @@ exports.handler = async (event) => {
     const menuPath = parts.slice(1);
 
     if (text === '' || goHome) {
-        response = `CON Ku soo dhawoow / Welcome
+        response = `CON Soo dhawoow / Welcome
 Maamulka Waxbarashada Gobalka Banaadir
 Banadir Regional Education
 

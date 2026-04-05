@@ -316,7 +316,7 @@ app.post('/ussd', async (req, res) => {
 
     if (text === '' || goHome) {
         // Language selection
-        response = `CON Ku soo dhawoow / Welcome
+        response = `CON Soo dhawoow / Welcome
 Maamulka Waxbarashada Gobalka Banaadir
 Banadir Regional Education
 
