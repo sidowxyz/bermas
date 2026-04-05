@@ -23,7 +23,7 @@ exports.handler = async (event) => {
 
     if (text === '' || goHome) {
         response = `CON Ku soo dhawoow / Welcome
-Maamulka Waxbarashada Banaadir
+Gobol Banaadir
 Banadir Regional Education
 
 1) Soomaali
@@ -70,11 +70,7 @@ for detailed SMS results:
         }
     } else if (menuPath.length === 1 && menuPath[0] === '3') {
         if (isSomali) {
-            response = `CON Sida loo isticmaalo:
-- Ikhtiyaar 1: Hubi Guul/Dhicis
-- Ikhtiyaar 2: Hel natiijo SMS
-
-Nidaamka Darajada:
+            response = `CON Nidaamka Darajada:
 A (90-100) - Aad u fiican
 B+ (75-89) - Fiican
 C+ (60-74) - Dhexdhexaad
@@ -83,11 +79,7 @@ E (0-39) - Guul darro
 
 0) Dib u noqo`;
         } else {
-            response = `CON How to use this service:
-- Option 1: View Pass/Fail
-- Option 2: Get SMS results
-
-Grading System:
+            response = `CON Grading System:
 A (90-100) - Exceptional
 B+ (75-89) - Very Good
 C+ (60-74) - Satisfactory
