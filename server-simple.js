@@ -48,6 +48,7 @@ function initializeDataFiles() {
             district: 'Hodan',
             school_name: 'Geedi Ugaas Secondary',
             exam_center: 'JUS',
+            phone_number: '+252612345678',
             arabic: 72,
             social_studies: 68,
             math: 75,
@@ -71,6 +72,7 @@ function initializeDataFiles() {
             district: 'Wadajir',
             school_name: 'Al-Azhar Secondary',
             exam_center: 'AZH',
+            phone_number: '+252613456789',
             arabic: 85,
             social_studies: 78,
             math: 82,
@@ -94,6 +96,7 @@ function initializeDataFiles() {
             district: 'Kaxda',
             school_name: 'Unity Secondary',
             exam_center: 'UNT',
+            phone_number: '+252614567890',
             arabic: 45,
             social_studies: 42,
             math: 38,
@@ -117,6 +120,7 @@ function initializeDataFiles() {
             district: 'Daynile',
             school_name: 'Hope Secondary',
             exam_center: 'HPE',
+            phone_number: '+252615678901',
             arabic: 25,
             social_studies: 28,
             math: 22,
@@ -412,7 +416,7 @@ Please enter a valid number
             }
         } else {
             try {
-                const recipient = await sendResultSms(student, phoneNumber, isSomali);
+                const recipient = await sendResultSms(student, student.phone_number, isSomali);
                 const sessions = readJSONFile(SESSIONS_FILE);
                 sessions.push({ sessionId, phoneNumber: recipient, rollNumber, step: 'sms_sent', timestamp: new Date().toISOString() });
                 writeJSONFile(SESSIONS_FILE, sessions);

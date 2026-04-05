@@ -79,12 +79,6 @@
             overflow: hidden;
             border: 1px solid #222;
         }
-        .pbar {
-            margin: 0 8px 6px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #222;
-        }
         .ibar input {
             flex: 1;
             background: #000;
@@ -96,17 +90,6 @@
             outline: none;
         }
         .ibar input::placeholder { color: #335533; }
-        .pbar input {
-            width: 100%;
-            background: #000;
-            border: none;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            padding: 9px 12px;
-            outline: none;
-        }
-        .pbar input::placeholder { color: #335533; }
         .ibar button {
             background: #00ff00;
             border: none;
@@ -193,10 +176,6 @@
         </div>
     </div>
 
-    <div class="pbar">
-        <input type="text" id="phone" placeholder="SMS phone: +252612345678" value="+252612345678" />
-    </div>
-
     <div class="ibar">
         <input type="text" id="inp" placeholder="*57001#" autofocus />
         <button onclick="go()">SEND</button>
@@ -228,7 +207,6 @@
 <script>
 let ss='', on=false, sid=Math.random().toString(36).substr(2,9);
 const I=()=>document.getElementById('inp');
-const P=()=>document.getElementById('phone');
 const S=()=>document.getElementById('sc');
 
 function t(c){I().value+=c}
@@ -249,7 +227,7 @@ function go(){
 }
 
 function req(tx){
-    fetch('/ussd',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sid,phoneNumber:P().value.trim(),text:tx})})
+    fetch('/ussd',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sid,phoneNumber:'auto',text:tx})})
     .then(r=>r.text()).then(show).catch(()=>err('Network error'));
 }
 
