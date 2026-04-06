@@ -183,7 +183,7 @@ function getGradeFromScore(score) {
 function buildDetailedSms(student, isSomali) {
     if (isSomali) {
         return [
-            'Maamulka Waxbarashada Gobalka Banaadir',
+            'Agaasinka Waxbarashada Gobolka Banaadir',
             'Natiijooyinka Imtixaanka Sanadka Waxbarasho 2025/2026',
             '',
             `Magaca Buuxa: ${student.full_name}`,
@@ -275,8 +275,8 @@ app.post('/ussd', async (req, res) => {
     if (text === '' || goHome) {
         // Language selection
         response = `CON Ku soo dhawoow / Welcome
-Maamulka Waxbarashada Gobalka Banaadir
-Banadir Regional Education
+Agaasinka Waxbarashada Gobolka Banaadir
+Banadir Regional Education Directorate
 
 1) Soomaali
 2) English`;
