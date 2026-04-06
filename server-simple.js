@@ -424,14 +424,16 @@ Thank you for using BERMAS.
 0) Back`;
                 }
             } catch (error) {
+                console.error('SMS Error:', error.message);
+                const errMsg = error.message || 'Unknown error';
                 if (isSomali) {
                     response = `CON SMS lama diri karin.
-Hubi lambarkaaga ama dejinta Twilio.
+Khaladka: ${errMsg.substring(0, 60)}
 
 0) Dib u noqo`;
                 } else {
                     response = `CON SMS could not be sent.
-Check your phone number or Twilio setup.
+Error: ${errMsg.substring(0, 60)}
 
 0) Back`;
                 }
