@@ -419,7 +419,7 @@ Waad ku mahadsantahay.
                     response = `CON SMS sent to ${recipient}.
 Check messages for results.
 
-Thank you for using BERMAS.
+Thank you for using HAANEED.
 
 0) Back`;
                 }
@@ -492,7 +492,7 @@ function getGradeFromScore(score) {
 }
 
 app.listen(PORT, () => {
-    console.log(`🚀 BERMAS USSD Prototype Server running on http://localhost:${PORT}`);
+    console.log(`🚀 HAANEED USSD Prototype Server running on http://localhost:${PORT}`);
     console.log(`📱 USSD Simulator: http://localhost:${PORT}`);
     console.log(`🔧 Admin Dashboard: http://localhost:${PORT}/admin`);
 });

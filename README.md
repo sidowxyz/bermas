@@ -1,4 +1,4 @@
-# BERMAS USSD Prototype
+# HAANEED USSD Prototype
 **Banadir Exam Results Mobile Access System**
 
 A web-based prototype simulating the USSD system for accessing exam results in Somalia.
@@ -135,7 +135,7 @@ Required columns (30 total):
 
 ## 📞 Contact & Support
 
-For questions about the BERMAS system:
+For questions about the HAANEED system:
 - Technical: System Administrator
 - Business: Banadir Regional Education Directorate
 

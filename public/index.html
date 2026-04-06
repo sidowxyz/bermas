@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BERMAS USSD</title>
+    <title>HAANEED USSD</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; background: #111; }
@@ -169,7 +169,7 @@
     <div class="screen" id="scr">
         <div class="sc" id="sc">
             <div class="hdr">Agaasinka Waxbarashada Gobolka Banaadir</div>
-Ku soo dhawoow BERMAS
+Ku soo dhawoow HAANEED
 Adeega Natiijooyinka
 
 Geli <span style="color:#ffff00">*57001#</span> oo riix CALL
@@ -234,19 +234,19 @@ function req(tx){
 function show(r){
     const el=S();
     if(r.startsWith('CON')){
-        el.innerHTML='<div class="hdr">BERMAS</div><div class="sc">'+r.substring(4).replace(/\n/g,'<br>')+'</div>';
+        el.innerHTML='<div class="hdr">HAANEED</div><div class="sc">'+r.substring(4).replace(/\n/g,'<br>')+'</div>';
     }else if(r.startsWith('END')){
-        el.innerHTML='<div class="hdr">BERMAS</div><div class="ok sc">'+r.substring(4).replace(/\n/g,'<br>')+'</div>';
+        el.innerHTML='<div class="hdr">HAANEED</div><div class="ok sc">'+r.substring(4).replace(/\n/g,'<br>')+'</div>';
         on=false;setTimeout(reset,6000);
     }
 }
 
-function ld(m){S().innerHTML='<div class="hdr">BERMAS</div><br>'+m+'<br><br><span class="dot"></span><span class="dot"></span><span class="dot"></span>'}
-function err(m){S().innerHTML='<div class="hdr">BERMAS</div><div class="err"><br>'+m+'</div>';on=false}
+function ld(m){S().innerHTML='<div class="hdr">HAANEED</div><br>'+m+'<br><br><span class="dot"></span><span class="dot"></span><span class="dot"></span>'}
+function err(m){S().innerHTML='<div class="hdr">HAANEED</div><div class="err"><br>'+m+'</div>';on=false}
 
 function reset(){
     ss='';on=false;sid=Math.random().toString(36).substr(2,9);
-    S().innerHTML='<div class="hdr">Agaasinka Waxbarashada Gobolka Banaadir</div>\nKu soo dhawoow BERMAS\nHubi Natiijada Imtixaanka\n\nGeli <span style="color:#ffff00">*57001#</span> oo riix SEND';
+    S().innerHTML='<div class="hdr">Agaasinka Waxbarashada Gobolka Banaadir</div>\nKu soo dhawoow HAANEED\nHubi Natiijada Imtixaanka\n\nGeli <span style="color:#ffff00">*57001#</span> oo riix SEND';
 }
 
 function end(){on=false;ss='';I().value='';reset()}
