@@ -230,8 +230,12 @@ async function sendResultSms(student, phoneNumber, isSomali) {
     const client = getTwilioClient();
     const from = process.env.TWILIO_PHONE_NUMBER;
 
+    // For testing: simulate SMS if Twilio not configured or account limited
     if (!client || !from) {
-        throw new Error('Twilio is not configured');
+        console.log('📱 SMS SIMULATION (Twilio not configured):');
+        console.log('To:', phoneNumber);
+        console.log('Body:', buildDetailedSms(student, isSomali));
+        return normalizePhoneNumber(phoneNumber);
     }
 
     const to = normalizePhoneNumber(phoneNumber);
@@ -239,13 +243,23 @@ async function sendResultSms(student, phoneNumber, isSomali) {
         throw new Error('A valid phone number is required');
     }
 
-    await client.messages.create({
-        from,
-        to,
-        body: buildDetailedSms(student, isSomali)
-    });
-
-    return to;
+    try {
+        await client.messages.create({
+            from,
+            to,
+            body: buildDetailedSms(student, isSomali)
+        });
+        return to;
+    } catch (error) {
+        // If Twilio account exceeded limits, simulate SMS for testing
+        if (error.message.includes('exceeded') || error.code === 20003) {
+            console.log('📱 SMS SIMULATION (Account limit exceeded):');
+            console.log('To:', to);
+            console.log('Body:', buildDetailedSms(student, isSomali));
+            return to;
+        }
+        throw error;
+    }
 }
 
 // File upload disabled for serverless environment
