@@ -288,10 +288,10 @@ app.post('/ussd', async (req, res) => {
 
     if (text === '' || goHome) {
         // Language selection
-        response = `CON Ku soo dhawoow / Welcome
-Agaasinka Waxbarashada Gobolka Banaadir
+        response = `CON Agaasinka Waxbarashada Gobolka Banaadir
 Banadir Regional Education Directorate
 
+Dooro Luuqadda:
 1) Soomaali
 2) English`;
     } else if (text === '1' || text === '2') {
